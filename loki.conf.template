@@ -1,0 +1,31 @@
+<match docker.*>
+  @type loki
+  url "#{ENV['LOKI_URL']}"
+  line_format json
+  extra_labels {"server_name":"${SERVER_NAME}"}
+  <label>
+    container_id $.container_id
+    container_name $.container_name
+    source $.source
+  </label>
+  <buffer>
+    flush_interval 10s
+    flush_at_shutdown true
+  </buffer>
+</match>
+<match docker.flask.*>
+  @type loki
+  url "#{ENV['LOKI_URL']}"
+  line_format json
+  extra_labels {"server_name":"${SERVER_NAME}"}
+  <label>
+    container_id $.container_id
+    container_name $.container_name
+    source $.source
+    log_source $.log_source
+  </label>
+  <buffer>
+    flush_interval 10s
+    flush_at_shutdown true
+  </buffer>
+</match>
