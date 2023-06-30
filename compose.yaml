@@ -1,6 +1,7 @@
 services:
   fluentd:
     image: grafana/fluent-plugin-loki:master
+    container_name: fluentd
     ports:
       - "24224:24224"
     command:
