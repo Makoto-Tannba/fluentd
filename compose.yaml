@@ -1,18 +1,26 @@
 services:
-  fluentd:
-    image: grafana/fluent-plugin-loki:master
-    container_name: fluentd
-    ports:
-      - "24224:24224"
-    command:
-      - "fluentd"
-      - "-v"
-      - "-p"
-      - "/fluentd/plugins"
-    environment:
-      LOKI_URL: ${LOKI_URL:?}
-      LOKI_USERNAME:
-      LOKI_PASSWORD:
-    volumes:
-      - ${PWD}/fluent.conf:/fluentd/etc/fluent.conf:ro
-      - ${PWD}/loki.conf:/fluentd/etc/loki.conf:ro
+    fluentd:
+        image: grafana/fluent-plugin-loki:main
+        container_name: fluentd
+        ports:
+            - "24224:24224"
+        command:
+            - "fluentd"
+            - "-v"
+            - "-p"
+            - "/fluentd/plugins"
+        environment:
+            - LOKI_URL=${LOKI_URL:?}
+            - LOKI_USERNAME=${LOKI_USERNAME:-}
+            - LOKI_PASSWORD=${LOKI_PASSWORD:-}
+            - HEALTHCHECK_ENDPOINT=${HEALTHCHECK_ENDPOINT:?}
+        healthcheck:
+            test: ruby /tmp/mnt/healthcheck.rb
+            interval: "5s"
+            timeout: "3s"
+            retries: 10
+        restart: ${RESTART_POLICY:?}
+        volumes:
+            - ${PWD}/fluent.conf:/fluentd/etc/fluent.conf:ro
+            - ${PWD}/loki.conf:/fluentd/etc/loki.conf:ro
+            - ${PWD}/mnt:/tmp/mnt:ro
